@@ -1,0 +1,33 @@
+@import 'normalize.css';
+@import '../fonts/Inter/fontFace.css';
+@import './variables.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-background-scrollbar);
+  border-radius: var(--scrollbar-width);
+}
+
+body {
+  font-family: Inter, Arial, sans-serif;
+  font-size: var(--font-size-m);
+  background-color: var(--color-background-primary);
+  color: var(--color-text-primary);
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+  text-decoration: none;
+  color: inherit;
+}

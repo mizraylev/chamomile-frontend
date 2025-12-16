@@ -1,0 +1,81 @@
+import { MessageStatus, type Message } from './types'
+
+export const exampleMessages: Message[] = [
+  {
+    authorId: 'me',
+    messageId: '1',
+    text: "Hi! How's it going?",
+    datetime: '2025-11-11T13:53:00.000Z',
+    status: MessageStatus.Seen,
+  },
+  {
+    authorId: 'other',
+    messageId: '2',
+    text: 'Good. And you?',
+    datetime: '2025-11-11T13:53:00.000Z',
+    status: MessageStatus.Seen,
+  },
+  {
+    authorId: 'other',
+    messageId: '3',
+    text: "How's your work?",
+    datetime: '2025-11-11T13:53:00.000Z',
+    status: MessageStatus.Seen,
+  },
+  {
+    authorId: 'me',
+    messageId: '4',
+    text: "Good so far. Thanks!\n\nI've tried a new recipe recently and enjoyed it really much🍜",
+    datetime: '2025-11-11T13:53:00.000Z',
+    status: MessageStatus.Seen,
+  },
+  {
+    authorId: 'other',
+    messageId: '5',
+    text: "Ooo I'd love to try your meals.",
+    datetime: '2025-11-11T13:53:00.000Z',
+    status: MessageStatus.Seen,
+  },
+  {
+    authorId: 'me',
+    messageId: '6',
+    text: 'Would you like to come over next week?',
+    datetime: '2025-11-11T13:53:00.000Z',
+    status: MessageStatus.Seen,
+  },
+  {
+    authorId: 'other',
+    messageId: '7',
+    text: "Yeah, it'd be great!",
+    datetime: '2025-11-11T13:53:00.000Z',
+    status: MessageStatus.Seen,
+  },
+  {
+    authorId: 'me',
+    messageId: '8',
+    text: "Alright then! I'll send you a message at the end of this week to schedule our very serious gastronomic meeting haha.",
+    datetime: '2025-11-11T13:53:00.000Z',
+    status: MessageStatus.Seen,
+  },
+  {
+    authorId: 'other',
+    messageId: '9',
+    text: 'Yayyy',
+    datetime: '2025-11-11T13:53:00.000Z',
+    status: MessageStatus.Seen,
+  },
+  {
+    authorId: 'other',
+    messageId: '10',
+    text: 'Looking forward to meeting you!',
+    datetime: '2025-11-11T13:53:00.000Z',
+    status: MessageStatus.Seen,
+  },
+  {
+    authorId: 'me',
+    messageId: '11',
+    text: 'See you🌧🌷',
+    datetime: '2025-11-11T13:53:00.000Z',
+    status: MessageStatus.Unseen,
+  },
+]
