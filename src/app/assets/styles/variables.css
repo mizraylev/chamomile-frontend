@@ -2,6 +2,7 @@
   --color-background-primary: #151519;
   --color-background-secondary: #0D0C0D;
   --color-background-tertiary: #212936;
+  --color-background-button-primary: #222328;
   --color-background-hover: #1b1c21;
   --color-background-active: #34353D;
   --color-background-scrollbar: #ffffff1a;
@@ -26,7 +27,9 @@
   --font-size-s: 14px;
   --font-size-xs: 12px;
 
-  --line-height-m: 22px;
+  --line-height-xl: 22px;
+  --line-height-l: 20px;
+  --line-height-m: 18px;
   --line-height-s: 16px;
 
   --icon-size-m: 24px;

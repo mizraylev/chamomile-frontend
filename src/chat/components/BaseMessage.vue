@@ -78,7 +78,7 @@ const isStatusShown = computed(() => {
 }
 
 .text {
-  line-height: var(--line-height-m);
+  line-height: var(--line-height-xl);
   word-wrap: break-word;
   white-space: pre-wrap;
 }
@@ -89,7 +89,7 @@ const isStatusShown = computed(() => {
   display: inline-flex;
   align-items: flex-end;
   gap: var(--spacing-xs);
-  height: var(--line-height-m);
+  height: var(--line-height-xl);
 }
 
 .time {

@@ -1,5 +1,5 @@
 <template>
-  <button class="button">
+  <button class="button" :class="background">
     <div class="icon" v-if="slots.icon">
       <slot name="icon"></slot>
     </div>
@@ -22,31 +22,43 @@ const slots = useSlots()
 
 defineProps({
   background: {
-    type: String as PropType<'transparent'>,
+    type: String as PropType<'transparent' | 'primary'>,
     default: 'transparent',
   },
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .button {
   border: none;
-  background-color: transparent;
-  opacity: 60%;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   border-radius: 100px;
   padding: 7px;
   cursor: pointer;
+
+  &.transparent {
+    background-color: transparent;
+  }
+
+  &.primary {
+    background-color: var(--color-background-button-primary);
+  }
+
+  &:hover {
+    background-color: var(--color-background-hover);
+  }
+
+  &:active {
+    background: var(--color-background-active);
+  }
 }
 
-.button:hover {
-  opacity: 100%;
-}
-
-.button:active {
-  background: var(--color-background-active);
+.label {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-s);
 }
 
 .icon {
