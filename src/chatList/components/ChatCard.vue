@@ -26,7 +26,7 @@
 import BaseChip from '@/app/components/BaseChip.vue'
 
 import { computed } from 'vue'
-import { RouteName } from '@/app/router/index'
+import { RouteName } from '@/chat/router/index'
 
 const props = defineProps({
   id: {
