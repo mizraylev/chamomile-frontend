@@ -3,6 +3,7 @@
   --color-background-secondary: #0D0C0D;
   --color-background-tertiary: #212936;
   --color-background-button-primary: #222328;
+  --color-background-loader-primary: #ffffff;
   --color-background-hover: #1b1c21;
   --color-background-active: #34353D;
   --color-background-scrollbar: #ffffff1a;
@@ -12,6 +13,7 @@
 
   --color-outline-primary: #34353D;
   --color-outline-focused: #FFFFFF;
+  --color-outline-error: #FE5CAF;
 
   --spacing-xl: 20px;
   --spacing-l: 16px;
