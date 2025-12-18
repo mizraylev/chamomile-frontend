@@ -1,20 +1,26 @@
 <template>
-  <button class="button" :class="background">
-    <div class="icon" v-if="slots.icon">
-      <slot name="icon"></slot>
-    </div>
+  <button class="button" :class="[background, { disabled }]">
+    <template v-if="!isLoading">
+      <div class="icon" v-if="slots.icon">
+        <slot name="icon"></slot>
+      </div>
 
-    <div class="label" v-if="slots.default">
-      <slot></slot>
-    </div>
+      <div class="label" v-if="slots.default">
+        <slot></slot>
+      </div>
 
-    <div class="icon" v-if="slots.postfixIcon">
-      <slot name="postfixIcon"></slot>
-    </div>
+      <div class="icon" v-if="slots.postfixIcon">
+        <slot name="postfixIcon"></slot>
+      </div>
+    </template>
+
+    <CircularLoader v-if="isLoading" />
   </button>
 </template>
 
 <script setup lang="ts">
+import CircularLoader from './CircularLoader.vue'
+
 import { useSlots } from 'vue'
 import type { PropType } from 'vue'
 
@@ -24,6 +30,14 @@ defineProps({
   background: {
     type: String as PropType<'transparent' | 'primary'>,
     default: 'transparent',
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  isLoading: {
+    type: Boolean,
+    default: false,
   },
 })
 </script>
@@ -37,6 +51,7 @@ defineProps({
   gap: 8px;
   border-radius: 100px;
   padding: 7px;
+  min-height: 32px;
   cursor: pointer;
 
   &.transparent {
@@ -47,12 +62,17 @@ defineProps({
     background-color: var(--color-background-button-primary);
   }
 
-  &:hover {
+  &:not(.disabled):hover {
     background-color: var(--color-background-hover);
   }
 
-  &:active {
+  &:not(.disabled):active {
     background: var(--color-background-active);
+  }
+
+  &.disabled {
+    filter: brightness(0.5);
+    cursor: default;
   }
 }
 
