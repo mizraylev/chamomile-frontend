@@ -61,17 +61,19 @@ import BaseButton from '@/app/components/BaseButton.vue'
 import BaseInput from '@/app/components/BaseInput.vue'
 import AuthForm from '../views/AuthForm.vue'
 
+import router from '@/app/router'
 import { ref } from 'vue'
 import { AuthFormId } from '../utils/types'
 import { areCredentialsCorrect, doesEmailExist } from '../services'
 import { RouteName } from '@/chat/router'
-import router from '@/app/router'
+import { useAuthStore } from '../stores'
 
 const currentFormId = ref(AuthFormId.Email)
 const isLoading = ref(false)
 const errorMessage = ref('')
 const email = ref('')
 const password = ref('')
+const authStore = useAuthStore()
 
 const checkEmail = async (): Promise<void> => {
   if (!email.value) return
@@ -94,9 +96,11 @@ const checkPassword = async (): Promise<void> => {
 
   isLoading.value = true
 
-  const isPasswordCorrect = await areCredentialsCorrect(email.value, password.value)
+  const userId = await areCredentialsCorrect(email.value, password.value)
 
-  if (isPasswordCorrect) {
+  if (userId) {
+    authStore.setUserId(userId)
+
     router.push({
       name: RouteName.Chat,
     })
