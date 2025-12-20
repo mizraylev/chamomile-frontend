@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { computed, type PropType } from 'vue'
 import { MessageStatus, type Message } from '../utils/types'
-import { isoToHhMm } from '../utils/time'
+import { isoToHhMm } from '../../app/utils/time'
 
 const props = defineProps({
   message: {
