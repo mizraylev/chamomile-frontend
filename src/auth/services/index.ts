@@ -1,27 +1,21 @@
-import { API_BASE_URL } from '@/app/services'
-import axios from 'axios'
+import apiClient from '@/app/services'
 
 export const doesEmailExist = async (email: string): Promise<boolean | null> => {
   try {
-    const response = await axios.get<boolean>(
-      `${API_BASE_URL}/users/doesEmailExist/${email}`,
-    )
+    const response = await apiClient.get<boolean>(`/users/doesEmailExist/${email}`)
     return response.data
   } catch {
     return null
   }
 }
 
-type AuthResponse = {
-  access_token: string
-}
-
+/** Returns userId if credentials are correct. */
 export const areCredentialsCorrect = async (
   email: string,
   password: string,
-): Promise<AuthResponse | null> => {
+): Promise<string | null> => {
   try {
-    const response = await axios.post<AuthResponse>(`${API_BASE_URL}/auth/login`, {
+    const response = await apiClient.post<string>('/auth/login', {
       email,
       password,
     })
