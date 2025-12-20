@@ -1,18 +1,43 @@
 <template>
   <div class="messengerLayout">
     <div class="panel">
-      <RouterView name="panel" />
+      <SidePanel />
     </div>
     <div class="chats">
-      <RouterView name="chats" />
+      <ChatList :chats="chats" />
     </div>
     <div class="chat">
-      <RouterView name="chat" />
+      <RouterView :chats="chats" />
     </div>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import ChatList from '@/chatList/views/ChatList.vue'
+import SidePanel from '@/sidePanel/views/SidePanel.vue'
+
+import { getChats } from '@/chatList/services'
+import { ref, type PropType } from 'vue'
+import { type Chat } from '@/chatList/utils/types'
+
+const props = defineProps({
+  chatList: {
+    type: Object as PropType<Chat[]>,
+    required: true,
+    default: [] as Chat[],
+  },
+})
+
+const chats = ref<Chat[]>(props.chatList)
+
+defineOptions({
+  async beforeRouteEnter(to, from, next) {
+    const chatList = await getChats()
+    to.meta.chatList = chatList
+    next()
+  },
+})
+</script>
 
 <style scoped>
 .messengerLayout {

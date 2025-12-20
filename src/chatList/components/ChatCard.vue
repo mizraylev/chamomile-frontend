@@ -10,7 +10,7 @@
       <div class="cardInfo">
         <div class="row">
           <div class="title">{{ title }}</div>
-          <div class="time">{{ time }}</div>
+          <div class="time">{{ lastMessageTime }}</div>
         </div>
 
         <div class="row">
@@ -27,6 +27,7 @@ import BaseChip from '@/app/components/BaseChip.vue'
 
 import { computed } from 'vue'
 import { RouteName } from '@/chat/router/index'
+import { isoToHhMm } from '@/app/utils/time'
 
 const props = defineProps({
   id: {
@@ -40,6 +41,7 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  /** Indicates when the last message in the chat was sent in timestamptz format. */
   time: {
     type: String,
   },
@@ -51,6 +53,13 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+})
+
+const lastMessageTime = computed((): string => {
+  if (!props.time) {
+    return ''
+  }
+  return isoToHhMm(props.time)
 })
 
 const chatRoute = computed(() => ({

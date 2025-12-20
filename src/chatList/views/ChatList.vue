@@ -6,13 +6,13 @@
 
     <div class="chatList">
       <ChatCard
-        id="1"
-        title="Cat"
-        time="22:37"
-        message="Hi! How's it going?"
-        :unreadCount="1"
+        v-for="chat in chats"
+        :key="chat.id"
+        :id="chat.id"
+        :title="chat.companionNickname"
+        :time="chat.lastMessageTimestamp"
+        :message="chat.lastMessageContent"
       />
-      <ChatCard id="2" title="Kitty" time="22:37" message="What's up?" />
     </div>
   </div>
 </template>
@@ -20,6 +20,16 @@
 <script setup lang="ts">
 import ChatCard from '../components/ChatCard.vue'
 import ChatSearch from '../components/ChatSearch.vue'
+
+import { type PropType } from 'vue'
+import { type Chat } from '../utils/types'
+
+defineProps({
+  chats: {
+    type: Object as PropType<Chat[]>,
+    required: true,
+  },
+})
 </script>
 
 <style scoped>
