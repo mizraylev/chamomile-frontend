@@ -12,3 +12,25 @@ export type Message = {
   datetime: string
   status: MessageStatus
 }
+
+export type GetMessage = {
+  id: string
+  content: string
+  sender: {
+    id: string
+    nickname: string
+  }
+  timestamp: string
+}
+
+export type NewMessage = {
+  chat: {
+    id: string
+  }
+  content: string
+  id: string
+  sender: {
+    id: string
+  }
+  timestamp: string
+}

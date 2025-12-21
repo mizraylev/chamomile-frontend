@@ -19,6 +19,7 @@ import SidePanel from '@/sidePanel/views/SidePanel.vue'
 import { getChats } from '@/chatList/services'
 import { ref, type PropType } from 'vue'
 import { type Chat } from '@/chatList/utils/types'
+import { connectSocket } from '@/chat/services'
 
 const props = defineProps({
   chatList: {
@@ -34,6 +35,7 @@ defineOptions({
   async beforeRouteEnter(to, from, next) {
     const chatList = await getChats()
     to.meta.chatList = chatList
+    connectSocket()
     next()
   },
 })

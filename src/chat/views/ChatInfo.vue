@@ -1,8 +1,10 @@
 <template>
   <div class="chatInfoContainer">
     <div class="chatInfo">
-      <div class="title">Cat</div>
-      <div class="status">last seen at 11:32</div>
+      <div class="title">{{ currentChat?.companionNickname }}</div>
+      <div class="status" v-if="currentChat?.companionLastSeen">
+        {{ lastSeen }}
+      </div>
     </div>
 
     <div class="buttons">
@@ -23,6 +25,21 @@
 
 <script setup lang="ts">
 import BaseButton from '@/app/components/BaseButton.vue'
+
+import { computed, type PropType } from 'vue'
+import { toFormattedLastSeen } from '@/app/utils/time'
+import { type Chat } from '@/chatList/utils/types'
+
+const props = defineProps({
+  currentChat: {
+    type: Object as PropType<Chat>,
+  },
+})
+
+const lastSeen = computed((): string => {
+  const timestamp = props.currentChat?.companionLastSeen
+  return timestamp ? toFormattedLastSeen(timestamp) : ''
+})
 </script>
 
 <style scoped>
@@ -37,6 +54,7 @@ import BaseButton from '@/app/components/BaseButton.vue'
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
+  justify-content: center;
 }
 
 .title {
