@@ -2,7 +2,6 @@ export enum MessageStatus {
   Seen = 'seen',
   Unseen = 'unseen',
   Loading = 'loading',
-  Live = 'live',
 }
 
 export type Message = {

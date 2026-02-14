@@ -4,49 +4,35 @@
       <span class="text">{{ message.text }}</span>
       <div class="info">
         <span class="time">{{ time }}</span>
-        <img
-          v-if="isStatusShown && statusSrc"
-          alt="Status"
-          class="status"
-          :src="statusSrc"
-        />
+        <img v-if="isMine && statusSrc" alt="Status" class="status" :src="statusSrc" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, type PropType } from 'vue'
+import { computed } from 'vue'
 import { MessageStatus, type Message } from '../utils/types'
 import { isoToHhMm } from '../../app/utils/time'
 
-const props = defineProps({
-  message: {
-    type: Object as PropType<Message>,
-    required: true,
-  },
-  isMine: {
-    type: Boolean,
-    required: true,
-  },
-})
+const props = defineProps<{
+  message: Message
+  isMine: boolean
+}>()
+
+const STATUS_TO_ICON_NAME: Record<MessageStatus, string> = {
+  [MessageStatus.Loading]: 'clock.svg',
+  [MessageStatus.Unseen]: 'sent.svg',
+  [MessageStatus.Seen]: 'seen.svg',
+}
 
 const time = computed(() => isoToHhMm(props.message.datetime))
+
 const statusSrc = computed((): string | null => {
-  const pathPrefix = '/src/chat/assets/images/icons/'
-  switch (props.message.status) {
-    case MessageStatus.Loading:
-      return pathPrefix + 'clock.svg'
-    case MessageStatus.Unseen:
-      return pathPrefix + 'sent.svg'
-    case MessageStatus.Seen:
-      return pathPrefix + 'seen.svg'
-    default:
-      return null
-  }
-})
-const isStatusShown = computed(() => {
-  return props.isMine || props.message.status === MessageStatus.Live
+  const iconName = STATUS_TO_ICON_NAME[props.message.status]
+  if (!iconName) return null
+
+  return new URL(`../assets/images/icons/${iconName}`, import.meta.url).href
 })
 </script>
 
