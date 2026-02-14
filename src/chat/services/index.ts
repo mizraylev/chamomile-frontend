@@ -26,6 +26,13 @@ export const sendMessage = (message: string, chatId: string): void => {
   })
 }
 
+export const sendTypingStatus = (isTyping: boolean, chatId: string): void => {
+  socket.emit('typing', {
+    isTyping,
+    chatId,
+  })
+}
+
 export const subscribeToChat = (chatId: string): void => {
   socket.emit('joinChat', chatId)
 }

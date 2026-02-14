@@ -34,19 +34,31 @@ import BaseButton from '@/app/components/BaseButton.vue'
 import BaseInput from '@/app/components/BaseInput.vue'
 
 import { ref } from 'vue'
-import { sendMessage } from '../services'
+import { sendMessage, sendTypingStatus } from '../services'
+import { debounce } from '@/app/utils/debounce'
 
-const props = defineProps({
-  chatId: {
-    type: String,
-    required: true,
-  },
-})
+const props = defineProps<{
+  chatId: string
+}>()
 
 const message = ref('')
+const isTyping = ref(false)
+
+const setTyping = (value: boolean) => {
+  isTyping.value = value
+  sendTypingStatus(value, props.chatId)
+}
+
+const debouncedFinishTyping = debounce(() => setTyping(false), 1500)
 
 const onInput = (value: string) => {
   message.value = value
+
+  if (!isTyping.value) {
+    setTyping(true)
+  }
+
+  debouncedFinishTyping()
 }
 
 const send = () => {

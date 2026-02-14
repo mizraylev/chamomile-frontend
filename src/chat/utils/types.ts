@@ -33,3 +33,9 @@ export type NewMessage = {
   }
   timestamp: string
 }
+
+export type GetTypingStatus = {
+  chatId: string
+  isTyping: boolean
+  senderId: string
+}

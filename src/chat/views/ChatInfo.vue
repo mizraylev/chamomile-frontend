@@ -2,8 +2,14 @@
   <div class="chatInfoContainer">
     <div class="chatInfo">
       <div class="title">{{ currentChat?.companionNickname }}</div>
-      <div class="status" v-if="currentChat?.companionLastSeen">
-        {{ lastSeen }}
+      <div class="status">
+        <Transition name="fade" mode="out-in">
+          <TypingActivity v-if="isTyping" />
+
+          <div v-else-if="lastSeen">
+            {{ lastSeen }}
+          </div>
+        </Transition>
       </div>
     </div>
 
@@ -25,15 +31,24 @@
 
 <script setup lang="ts">
 import BaseButton from '@/app/components/BaseButton.vue'
+import TypingActivity from '../components/TypingActivity.vue'
 
-import { computed, type PropType } from 'vue'
+import { computed, ref } from 'vue'
 import { toFormattedLastSeen } from '@/app/utils/time'
+import { socket } from '../services'
 import { type Chat } from '@/chatList/utils/types'
+import { type GetTypingStatus } from '../utils/types'
 
-const props = defineProps({
-  currentChat: {
-    type: Object as PropType<Chat>,
-  },
+const props = defineProps<{
+  currentChat?: Chat
+}>()
+
+const isTyping = ref(false)
+
+socket.on('typing', (typing: GetTypingStatus) => {
+  if (typing.chatId === props.currentChat?.id) {
+    isTyping.value = typing.isTyping
+  }
 })
 
 const lastSeen = computed((): string => {
@@ -64,11 +79,22 @@ const lastSeen = computed((): string => {
 .status {
   font-size: var(--font-size-s);
   color: var(--color-text-secondary);
+  height: 1rem;
 }
 
 .buttons {
   display: flex;
   gap: var(--spacing-s);
   align-items: center;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
