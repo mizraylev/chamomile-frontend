@@ -19,9 +19,14 @@ export const connectSocket = () => {
   })
 }
 
-export const sendMessage = (message: string, chatId: string): void => {
+export const sendMessage = (
+  message: string,
+  messageKey: string,
+  chatId: string,
+): void => {
   socket.emit('createMessage', {
     content: message,
+    messageKey,
     chatId,
   })
 }

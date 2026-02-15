@@ -4,7 +4,7 @@
       <BaseMessage
         v-for="message in messages"
         environment="direct"
-        :key="message.messageId"
+        :key="isLoadingMessage(message) ? message.messageKey : message.messageId"
         :isMine="message.authorId === authStore.userId"
         :message="message"
       />
@@ -16,24 +16,16 @@
 <script setup lang="ts">
 import BaseMessage from '../components/BaseMessage.vue'
 
-import { ref, watch, type PropType, nextTick } from 'vue'
-import { socket, toClientMessage } from '../services'
-import { type Message, type NewMessage } from '../utils/types'
+import { ref, nextTick } from 'vue'
+import { isLoadingMessage, type LoadingMessage, type Message } from '../utils/types'
 import { useAuthStore } from '@/auth/stores'
 
-const props = defineProps({
-  chatId: {
-    type: String,
-    required: true,
-  },
-  messageHistory: {
-    type: Object as PropType<Message[]>,
-    required: true,
-  },
-})
+defineProps<{
+  messages: (Message | LoadingMessage)[]
+}>()
 
 const authStore = useAuthStore()
-const messages = ref<Message[]>([])
+
 const messageList = ref<HTMLElement | null>(null)
 const bottomLine = ref<HTMLElement | null>(null)
 
@@ -54,24 +46,17 @@ const scrollToBottom = (options?: ScrollIntoViewOptions) => {
   })
 }
 
-socket.on('newMessage', (msg: NewMessage) => {
-  if (msg.chat.id === props.chatId) {
-    messages.value.push(toClientMessage(msg))
-
-    if (isMessageListScrolledToBottom()) {
-      scrollToBottom({ behavior: 'smooth' })
-    }
+/** Scrolls to the bottom of the new message if the scrollbar was at the bottom of the message list just before it was added. */
+const handleNewMessageScroll = () => {
+  if (isMessageListScrolledToBottom()) {
+    scrollToBottom({ behavior: 'smooth' })
   }
-})
+}
 
-watch(
-  () => props.messageHistory,
-  (newMessageHistory) => {
-    messages.value = newMessageHistory
-    scrollToBottom()
-  },
-  { immediate: true },
-)
+defineExpose({
+  scrollToBottom,
+  handleNewMessageScroll,
+})
 </script>
 
 <style scoped>

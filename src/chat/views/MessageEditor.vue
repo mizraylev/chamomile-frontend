@@ -36,11 +36,20 @@ import BaseInput from '@/app/components/BaseInput.vue'
 import { ref } from 'vue'
 import { sendMessage, sendTypingStatus } from '../services'
 import { debounce } from '@/app/utils/debounce'
+import { MessageStatus, type LoadingMessage } from '../utils/types'
+import { useAuthStore } from '@/auth/stores'
 
 const props = defineProps<{
   chatId: string
 }>()
 
+const emit = defineEmits<{
+  addMessage: [message: LoadingMessage]
+}>()
+
+const authStore = useAuthStore()
+
+const counter = ref(0)
 const message = ref('')
 const isTyping = ref(false)
 
@@ -64,7 +73,18 @@ const onInput = (value: string) => {
 const send = () => {
   const readyMessage = message.value.trim()
   if (readyMessage) {
-    sendMessage(readyMessage, props.chatId)
+    const messageKey = String(counter.value)
+
+    emit('addMessage', {
+      authorId: authStore.userId,
+      messageKey,
+      text: readyMessage,
+      status: MessageStatus.Loading,
+    })
+
+    sendMessage(readyMessage, messageKey, props.chatId)
+
+    counter.value++
     message.value = ''
   }
 }

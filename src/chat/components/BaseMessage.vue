@@ -3,7 +3,7 @@
     <div class="message">
       <span class="text">{{ message.text }}</span>
       <div class="info">
-        <span class="time">{{ time }}</span>
+        <span v-if="time" class="time">{{ time }}</span>
         <img v-if="isMine && statusSrc" alt="Status" class="status" :src="statusSrc" />
       </div>
     </div>
@@ -12,11 +12,16 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { MessageStatus, type Message } from '../utils/types'
+import {
+  isLoadingMessage,
+  MessageStatus,
+  type LoadingMessage,
+  type Message,
+} from '../utils/types'
 import { isoToHhMm } from '../../app/utils/time'
 
 const props = defineProps<{
-  message: Message
+  message: Message | LoadingMessage
   isMine: boolean
 }>()
 
@@ -26,7 +31,9 @@ const STATUS_TO_ICON_NAME: Record<MessageStatus, string> = {
   [MessageStatus.Seen]: 'seen.svg',
 }
 
-const time = computed(() => isoToHhMm(props.message.datetime))
+const time = computed(() => {
+  return !isLoadingMessage(props.message) ? isoToHhMm(props.message.datetime) : ''
+})
 
 const statusSrc = computed((): string | null => {
   const iconName = STATUS_TO_ICON_NAME[props.message.status]

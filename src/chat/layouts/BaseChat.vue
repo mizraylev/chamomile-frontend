@@ -1,8 +1,8 @@
 <template>
   <div class="chat">
     <ChatInfo :currentChat="currentChat" />
-    <MessageList :chatId="id" :messageHistory="messages" />
-    <MessageEditor :chatId="id" />
+    <MessageList :messages="messages" ref="messageList" />
+    <MessageEditor :chatId="id" @addMessage="onNewMessage" />
   </div>
 </template>
 
@@ -13,24 +13,31 @@ import MessageList from '../views/MessageList.vue'
 
 import router from '@/app/router'
 import { RouteName } from '../router'
-import { computed, onBeforeMount, ref, type PropType } from 'vue'
-import { getChatMessages, subscribeToChat } from '@/chat/services'
+import { computed, onBeforeMount, ref } from 'vue'
+import {
+  getChatMessages,
+  socket,
+  subscribeToChat,
+  toClientMessage,
+} from '@/chat/services'
 import { onBeforeRouteUpdate } from 'vue-router'
-import { type Message } from '../utils/types'
+import {
+  isLoadingMessage,
+  MessageStatus,
+  type LoadingMessage,
+  type Message,
+  type MessageWasSent,
+  type NewMessage,
+} from '../utils/types'
 import { type Chat } from '@/chatList/utils/types'
 
-const props = defineProps({
-  id: {
-    type: String,
-    required: true,
-  },
-  chats: {
-    type: Object as PropType<Chat[]>,
-    required: true,
-  },
-})
+const props = defineProps<{
+  id: string
+  chats: Chat[]
+}>()
 
-const messages = ref<Message[]>([])
+const messages = ref<(Message | LoadingMessage)[]>([])
+const messageList = ref<typeof MessageList | null>(null)
 
 const currentChat = computed((): Chat | undefined => {
   const chat = props.chats.find((chat) => chat.id === props.id)
@@ -51,12 +58,34 @@ const fetchMessageHistory = async (chatId: string) => {
 
   if (chatMessages) {
     messages.value = chatMessages
+    messageList.value?.scrollToBottom()
   }
 }
 
 const initChat = async (chatId: string): Promise<void> => {
   subscribeToChat(chatId)
   await fetchMessageHistory(chatId)
+}
+
+const onNewMessage = (msg: Message | LoadingMessage) => {
+  messages.value.push(msg)
+  messageList.value?.handleNewMessageScroll()
+}
+
+const changeLoadingToSent = (ack: MessageWasSent) => {
+  for (const [index, message] of messages.value.entries()) {
+    if (isLoadingMessage(message) && message.messageKey === ack.messageKey) {
+      const enrichedMessage: Message = {
+        authorId: message.authorId,
+        messageId: ack.messageId,
+        text: message.text,
+        datetime: ack.datetime,
+        status: MessageStatus.Unseen,
+      }
+      messages.value.splice(index, 1, enrichedMessage)
+      break
+    }
+  }
 }
 
 onBeforeMount(async () => {
@@ -67,6 +96,18 @@ onBeforeRouteUpdate(async (to, from, next) => {
   const newChatId = to.params.id as string
   await initChat(newChatId)
   next()
+})
+
+socket.on('newMessage', (msg: NewMessage) => {
+  if (msg.chat.id !== props.id) return
+
+  onNewMessage(toClientMessage(msg))
+})
+
+socket.on('messageWasSent', async (ack: MessageWasSent) => {
+  if (ack.chatId !== props.id) return
+
+  changeLoadingToSent(ack)
 })
 </script>
 
