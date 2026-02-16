@@ -64,6 +64,7 @@ const statusSrc = computed((): string | null => {
 
 .message {
   max-width: 360px;
+  min-width: 0;
   float: left;
   border-radius: var(--border-radius-m);
   padding: var(--spacing-s) var(--spacing-m);

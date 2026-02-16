@@ -78,5 +78,6 @@ defineExpose({
   padding: var(--spacing-xl) calc(var(--spacing-xl) - var(--scrollbar-width))
     var(--spacing-xl) var(--spacing-xl);
   height: 100%;
+  min-width: 0;
 }
 </style>
