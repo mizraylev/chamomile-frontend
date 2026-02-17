@@ -1,7 +1,7 @@
 <template>
   <div
     class="messengerLayout"
-    :class="{ chatIsSelected: route.name === RouteName.ChatWithId }"
+    :class="{ chatIsSelected: route.name === ChatRouteName.ChatWithId }"
   >
     <div class="panel">
       <SidePanel />
@@ -24,7 +24,7 @@ import { ref, type PropType } from 'vue'
 import { type Chat } from '@/chatList/utils/types'
 import { connectSocket } from '@/chat/services'
 import { useRoute } from 'vue-router'
-import { RouteName } from '@/chat/router'
+import { ChatRouteName } from '@/chat/router'
 
 const props = defineProps({
   chatList: {

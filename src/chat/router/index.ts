@@ -4,7 +4,7 @@ import BaseChat from '@/chat/layouts/BaseChat.vue'
 
 import type { RouteRecordRaw } from 'vue-router'
 
-export enum RouteName {
+export const enum ChatRouteName {
   Chat = 'Chat',
   ChatWithId = 'ChatWithId',
 }
@@ -17,12 +17,12 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        name: RouteName.Chat,
+        name: ChatRouteName.Chat,
         component: ChatIsNotSelected,
       },
       {
         path: ':id',
-        name: RouteName.ChatWithId,
+        name: ChatRouteName.ChatWithId,
         component: BaseChat,
         props: true,
       },

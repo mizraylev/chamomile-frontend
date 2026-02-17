@@ -45,7 +45,7 @@ import { socket } from '../services'
 import { useRouter } from 'vue-router'
 import { type Chat } from '@/chatList/utils/types'
 import { type GetTypingStatus } from '../utils/types'
-import { RouteName } from '../router'
+import { ChatRouteName } from '../router'
 
 const props = defineProps<{
   currentChat?: Chat
@@ -68,7 +68,7 @@ const lastSeen = computed((): string => {
 
 const openChats = () => {
   router.push({
-    name: RouteName.Chat,
+    name: ChatRouteName.Chat,
   })
 }
 </script>

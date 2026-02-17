@@ -1,6 +1,6 @@
 <template>
   <div class="messageContainer" :class="{ mine: isMine }">
-    <div class="message">
+    <div class="message" :id="id">
       <span class="text">{{ message.text }}</span>
       <div class="info">
         <span v-if="time" class="time">{{ time }}</span>
@@ -30,6 +30,10 @@ const STATUS_TO_ICON_NAME: Record<MessageStatus, string> = {
   [MessageStatus.Unseen]: 'sent.svg',
   [MessageStatus.Seen]: 'seen.svg',
 }
+
+const id = computed(() => {
+  return !isLoadingMessage(props.message) ? 'm-' + props.message.messageId : ''
+})
 
 const time = computed(() => {
   return !isLoadingMessage(props.message) ? isoToHhMm(props.message.datetime) : ''

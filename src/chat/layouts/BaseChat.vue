@@ -12,8 +12,8 @@ import MessageEditor from '../views/MessageEditor.vue'
 import MessageList from '../views/MessageList.vue'
 
 import router from '@/app/router'
-import { RouteName } from '../router'
-import { computed, onBeforeMount, ref } from 'vue'
+import { ChatRouteName } from '../router'
+import { computed, nextTick, onBeforeMount, ref } from 'vue'
 import {
   getChatMessages,
   socket,
@@ -30,6 +30,7 @@ import {
   type NewMessage,
 } from '../utils/types'
 import { type Chat } from '@/chatList/utils/types'
+import useMessageReader from '../composables/useMessageReader'
 
 const props = defineProps<{
   id: string
@@ -39,6 +40,8 @@ const props = defineProps<{
 const messages = ref<(Message | LoadingMessage)[]>([])
 const messageList = ref<typeof MessageList | null>(null)
 
+const { observeMessage, observeUnreadMessages } = useMessageReader(props.id, messages)
+
 const currentChat = computed((): Chat | undefined => {
   const chat = props.chats.find((chat) => chat.id === props.id)
 
@@ -47,7 +50,7 @@ const currentChat = computed((): Chat | undefined => {
   }
 
   router.replace({
-    name: RouteName.Chat,
+    name: ChatRouteName.Chat,
   })
 
   return undefined
@@ -65,6 +68,7 @@ const fetchMessageHistory = async (chatId: string) => {
 const initChat = async (chatId: string): Promise<void> => {
   subscribeToChat(chatId)
   await fetchMessageHistory(chatId)
+  observeUnreadMessages()
 }
 
 const onNewMessage = (msg: Message | LoadingMessage) => {
@@ -102,6 +106,10 @@ socket.on('newMessage', (msg: NewMessage) => {
   if (msg.chat.id !== props.id) return
 
   onNewMessage(toClientMessage(msg))
+
+  nextTick(() => {
+    observeMessage(msg.id)
+  })
 })
 
 socket.on('messageWasSent', async (ack: MessageWasSent) => {

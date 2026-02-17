@@ -65,7 +65,7 @@ import router from '@/app/router'
 import { ref } from 'vue'
 import { AuthFormId } from '../utils/types'
 import { areCredentialsCorrect, doesEmailExist } from '../services'
-import { RouteName } from '@/chat/router'
+import { ChatRouteName } from '@/chat/router'
 import { useAuthStore } from '../stores'
 
 const currentFormId = ref(AuthFormId.Email)
@@ -102,7 +102,7 @@ const checkPassword = async (): Promise<void> => {
     authStore.setUserId(userId)
 
     router.push({
-      name: RouteName.Chat,
+      name: ChatRouteName.Chat,
     })
   } else {
     errorMessage.value = 'Wrong password. Try again'

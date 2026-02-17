@@ -31,6 +31,7 @@ export type GetMessage = {
     nickname: string
   }
   timestamp: string
+  isRead: boolean
 }
 
 export type NewMessage = {
@@ -43,6 +44,7 @@ export type NewMessage = {
     id: string
   }
   timestamp: string
+  isRead: boolean
 }
 
 export type MessageWasSent = {

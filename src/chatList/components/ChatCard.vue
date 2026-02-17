@@ -26,7 +26,7 @@
 import BaseChip from '@/app/components/BaseChip.vue'
 
 import { computed } from 'vue'
-import { RouteName } from '@/chat/router/index'
+import { ChatRouteName } from '@/chat/router/index'
 import { isoToHhMm } from '@/app/utils/time'
 
 const props = defineProps({
@@ -63,7 +63,7 @@ const lastMessageTime = computed((): string => {
 })
 
 const chatRoute = computed(() => ({
-  name: RouteName.ChatWithId,
+  name: ChatRouteName.ChatWithId,
   params: {
     id: props.id,
   },

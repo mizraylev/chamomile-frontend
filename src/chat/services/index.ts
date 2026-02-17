@@ -31,6 +31,13 @@ export const sendMessage = (
   })
 }
 
+export const sendReadMessagesIds = (chatId: string, ids: string[]) => {
+  socket.emit('markAsRead', {
+    idsOfMessages: ids,
+    chatId,
+  })
+}
+
 export const sendTypingStatus = (isTyping: boolean, chatId: string): void => {
   socket.emit('typing', {
     isTyping,
@@ -62,5 +69,5 @@ export const toClientMessage = (message: NewMessage | GetMessage): Message => ({
   messageId: message.id,
   text: message.content,
   datetime: message.timestamp,
-  status: MessageStatus.Seen,
+  status: message.isRead ? MessageStatus.Seen : MessageStatus.Unseen,
 })
