@@ -6,11 +6,11 @@ import {
   type Message,
 } from '../utils/types'
 import { sendReadMessagesIds, socket } from '../services'
-import type { Ref } from 'vue'
+import { toValue, type MaybeRefOrGetter, type Ref } from 'vue'
 import { useAuthStore } from '@/auth/stores'
 
 export default function useMessageReader(
-  chatId: string,
+  chatId: MaybeRefOrGetter<string>,
   messages: Ref<(Message | LoadingMessage)[]>,
 ) {
   const authStore = useAuthStore()
@@ -34,7 +34,7 @@ export default function useMessageReader(
 
   const debouncedRead = debounce(() => {
     markAsRead(newlyReadMessagesIds)
-    sendReadMessagesIds(chatId, newlyReadMessagesIds)
+    sendReadMessagesIds(toValue(chatId), newlyReadMessagesIds)
     newlyReadMessagesIds = []
   }, 500)
 

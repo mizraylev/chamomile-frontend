@@ -40,7 +40,10 @@ const props = defineProps<{
 const messages = ref<(Message | LoadingMessage)[]>([])
 const messageList = ref<typeof MessageList | null>(null)
 
-const { observeMessage, observeUnreadMessages } = useMessageReader(props.id, messages)
+const { observeMessage, observeUnreadMessages } = useMessageReader(
+  () => props.id,
+  messages,
+)
 
 const currentChat = computed((): Chat | undefined => {
   const chat = props.chats.find((chat) => chat.id === props.id)
