@@ -22,9 +22,10 @@ import SidePanel from '@/sidePanel/views/SidePanel.vue'
 import { getChats } from '@/chatList/services'
 import { ref, type PropType } from 'vue'
 import { type Chat } from '@/chatList/utils/types'
-import { connectSocket } from '@/chat/services'
+import { connectSocket, socket } from '@/chat/services'
 import { useRoute } from 'vue-router'
 import { ChatRouteName } from '@/chat/router'
+import type { GetTypingStatus, GetUserPresenceStatus } from '@/chat/utils/types'
 
 const props = defineProps({
   chatList: {
@@ -45,6 +46,23 @@ defineOptions({
     connectSocket()
     next()
   },
+})
+
+socket.on('typing', (typing: GetTypingStatus) => {
+  const chat = chats.value.find((chat) => chat.id === typing.chatId)
+  if (!chat) return
+
+  chat.isTyping = typing.isTyping
+})
+
+socket.on('user:presence_changed', (presence: GetUserPresenceStatus) => {
+  const chat = chats.value.find((chat) => chat.id === presence.chatId)
+  if (!chat) return
+
+  chat.isOnline = presence.isOnline
+  if (presence.lastSeen) {
+    chat.companionLastSeen = presence.lastSeen
+  }
 })
 </script>
 

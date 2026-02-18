@@ -6,4 +6,6 @@ export type Chat = {
   companionLastSeen: string
   lastMessageContent: string
   lastMessageTimestamp: string
+  isOnline: boolean
+  isTyping?: boolean
 }

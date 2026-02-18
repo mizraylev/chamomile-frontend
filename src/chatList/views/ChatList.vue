@@ -12,6 +12,8 @@
         :title="chat.companionNickname"
         :time="chat.lastMessageTimestamp"
         :message="chat.lastMessageContent"
+        :isOnline="chat.isOnline"
+        :isTyping="chat.isTyping"
       />
     </div>
   </div>

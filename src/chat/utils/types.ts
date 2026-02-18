@@ -59,3 +59,10 @@ export type GetTypingStatus = {
   isTyping: boolean
   senderId: string
 }
+
+export type GetUserPresenceStatus = {
+  chatId: string
+  userId: string
+  isOnline: boolean
+  lastSeen?: string // Last Seen is provided only if the user went offline.
+}

@@ -16,6 +16,7 @@ export const connectSocket = () => {
 
   socket.on('connect', () => {
     console.log('Connected to server')
+    socket.emit('online')
   })
 }
 

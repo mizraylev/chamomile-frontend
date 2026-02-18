@@ -12,8 +12,10 @@
         <Transition name="fade" mode="out-in">
           <TypingActivity v-if="isTyping" />
 
-          <div v-else-if="lastSeen" class="lastSeen">
-            {{ lastSeen }}
+          <div v-else-if="isOnline">Online</div>
+
+          <div v-else-if="lastSeenLabel" class="lastSeen">
+            {{ lastSeenLabel }}
           </div>
         </Transition>
       </div>
@@ -39,13 +41,11 @@
 import BaseButton from '@/app/components/BaseButton.vue'
 import TypingActivity from '../components/TypingActivity.vue'
 
-import { computed, ref } from 'vue'
-import { toFormattedLastSeen } from '@/app/utils/time'
-import { socket } from '../services'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { type Chat } from '@/chatList/utils/types'
-import { type GetTypingStatus } from '../utils/types'
 import { ChatRouteName } from '../router'
+import useTimeAgo from '../composables/useTimeAgo'
 
 const props = defineProps<{
   currentChat?: Chat
@@ -53,17 +53,18 @@ const props = defineProps<{
 
 const router = useRouter()
 
-const isTyping = ref(false)
+const { timeAgoLabel: lastSeenLabel } = useTimeAgo(
+  () => props.currentChat?.companionLastSeen,
+  'en',
+  (timeAgo: string) => 'Last seen ' + timeAgo,
+)
 
-socket.on('typing', (typing: GetTypingStatus) => {
-  if (typing.chatId === props.currentChat?.id) {
-    isTyping.value = typing.isTyping
-  }
+const isTyping = computed((): boolean => {
+  return !!props.currentChat?.isTyping
 })
 
-const lastSeen = computed((): string => {
-  const timestamp = props.currentChat?.companionLastSeen
-  return timestamp ? toFormattedLastSeen(timestamp) : ''
+const isOnline = computed((): boolean => {
+  return !!props.currentChat?.isOnline
 })
 
 const openChats = () => {

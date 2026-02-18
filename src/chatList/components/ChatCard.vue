@@ -1,10 +1,16 @@
 <template>
   <RouterLink :to="chatRoute">
     <div class="chatCard">
-      <img v-if="avatarSrc" :src="avatarSrc" alt="Avatar" class="avatar" />
+      <div class="avatarWrapper">
+        <img v-if="avatarSrc" :src="avatarSrc" alt="Avatar" class="avatar" />
 
-      <div class="avatar initials">
-        {{ avatarInitials }}
+        <div class="avatar initials">
+          {{ avatarInitials }}
+        </div>
+
+        <Transition name="fade">
+          <div v-if="isOnline" class="onlineBadge"></div>
+        </Transition>
       </div>
 
       <div class="cardInfo">
@@ -14,7 +20,11 @@
         </div>
 
         <div class="row">
-          <div class="message">{{ message }}</div>
+          <Transition name="fade" mode="out-in">
+            <TypingActivity v-if="isTyping" class="message" />
+            <div v-else class="message">{{ message }}</div>
+          </Transition>
+
           <BaseChip v-if="unreadCount" :text="String(unreadCount)" />
         </div>
       </div>
@@ -24,6 +34,7 @@
 
 <script setup lang="ts">
 import BaseChip from '@/app/components/BaseChip.vue'
+import TypingActivity from '../../chat/components/TypingActivity.vue'
 
 import { computed } from 'vue'
 import { ChatRouteName } from '@/chat/router/index'
@@ -53,6 +64,12 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  isOnline: {
+    type: Boolean,
+  },
+  isTyping: {
+    type: Boolean,
+  },
 })
 
 const lastMessageTime = computed((): string => {
@@ -78,7 +95,7 @@ const avatarInitials = computed((): string => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .chatCard {
   padding: var(--spacing-l);
   display: grid;
@@ -97,6 +114,20 @@ const avatarInitials = computed((): string => {
   width: 38px;
   height: 38px;
   border-radius: 50%;
+}
+
+.avatarWrapper {
+  position: relative;
+
+  & .onlineBadge {
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+  }
 }
 
 .initials {
@@ -129,5 +160,15 @@ const avatarInitials = computed((): string => {
 .time,
 .message {
   color: var(--color-text-secondary);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
