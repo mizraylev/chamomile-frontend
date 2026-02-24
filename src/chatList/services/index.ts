@@ -1,9 +1,10 @@
 import apiClient from '@/app/services'
-import { type Chat } from '../utils/types'
+import { type GetChat } from '../utils/types'
+import { MessageStatus, type ChatsById } from '@/chat/utils/types'
 
-export const getChats = async (): Promise<Chat[]> => {
+export const getChats = async (): Promise<GetChat[]> => {
   try {
-    const response = await apiClient.get<Chat[]>('/chats')
+    const response = await apiClient.get<GetChat[]>('/chats')
     return response.data
   } catch {
     return []
@@ -17,4 +18,30 @@ export const getUsers = async (): Promise<string[] | null> => {
   } catch {
     return null
   }
+}
+
+export const toChatsById = (chats: GetChat[]): ChatsById => {
+  const chatsById: ChatsById = {}
+
+  chats.forEach((chat) => {
+    chatsById[chat.id] = {
+      name: chat.companionNickname,
+      lastSeen: chat.companionLastSeen,
+      isOnline: chat.isOnline,
+      isTyping: false,
+      wasHistoryFetched: false,
+      unreadCount: chat.unreadCount,
+      messages: [
+        {
+          authorId: chat.lastMessageSenderId,
+          messageId: chat.lastMessageId,
+          text: chat.lastMessageContent,
+          datetime: chat.lastMessageTimestamp,
+          status: chat.lastMessageIsRead ? MessageStatus.Seen : MessageStatus.Unseen,
+        },
+      ],
+    }
+  })
+
+  return chatsById
 }

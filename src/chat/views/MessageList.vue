@@ -2,7 +2,7 @@
   <div class="messageListWrapper" ref="messageList">
     <div class="messageList">
       <BaseMessage
-        v-for="message in messages"
+        v-for="message in currentMessages"
         environment="direct"
         :key="isLoadingMessage(message) ? message.messageKey : message.messageId"
         :isMine="message.authorId === authStore.userId"
@@ -16,15 +16,15 @@
 <script setup lang="ts">
 import BaseMessage from '../components/BaseMessage.vue'
 
-import { ref, nextTick } from 'vue'
-import { isLoadingMessage, type LoadingMessage, type Message } from '../utils/types'
+import { ref, nextTick, watch, onMounted } from 'vue'
+import { isLoadingMessage } from '../utils/types'
 import { useAuthStore } from '@/auth/stores'
-
-defineProps<{
-  messages: (Message | LoadingMessage)[]
-}>()
+import { useChatStore } from '../stores'
+import { storeToRefs } from 'pinia'
 
 const authStore = useAuthStore()
+
+const { currentMessages, currentChat, currentChatId } = storeToRefs(useChatStore())
 
 const messageList = ref<HTMLElement | null>(null)
 const bottomLine = ref<HTMLElement | null>(null)
@@ -53,9 +53,41 @@ const handleNewMessageScroll = () => {
   }
 }
 
-defineExpose({
-  scrollToBottom,
-  handleNewMessageScroll,
+watch(
+  () => currentChat.value?.wasHistoryFetched,
+  (wasHistoryFetched) => {
+    if (wasHistoryFetched) {
+      scrollToBottom()
+    }
+  },
+)
+
+watch(
+  () => currentChat.value?.messages[currentChat.value?.messages.length - 1],
+  (newMessage, oldMessage) => {
+    if (oldMessage) {
+      if (!newMessage) return
+
+      const oldId = isLoadingMessage(oldMessage)
+        ? oldMessage.messageKey
+        : oldMessage.messageId
+      const newId = isLoadingMessage(newMessage)
+        ? newMessage.messageKey
+        : newMessage.messageId
+
+      if (newId === oldId) return
+    }
+
+    handleNewMessageScroll()
+  },
+)
+
+watch(currentChatId, () => {
+  scrollToBottom()
+})
+
+onMounted(() => {
+  scrollToBottom()
 })
 </script>
 
@@ -66,6 +98,7 @@ defineExpose({
   overflow: auto;
   scrollbar-gutter: stable;
   display: grid;
+  grid-template-rows: 1fr 0;
   background-size: cover;
   background-position: center;
 }

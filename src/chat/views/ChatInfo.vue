@@ -7,7 +7,7 @@
     </BaseButton>
 
     <div class="chatInfo">
-      <div class="title">{{ currentChat?.companionNickname }}</div>
+      <div class="title">{{ currentChat?.name }}</div>
       <div class="status">
         <Transition name="fade" mode="out-in">
           <TypingActivity v-if="isTyping" />
@@ -41,30 +41,30 @@
 import BaseButton from '@/app/components/BaseButton.vue'
 import TypingActivity from '../components/TypingActivity.vue'
 
+import useTimeAgo from '../composables/useTimeAgo'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { type Chat } from '@/chatList/utils/types'
 import { ChatRouteName } from '../router'
-import useTimeAgo from '../composables/useTimeAgo'
-
-const props = defineProps<{
-  currentChat?: Chat
-}>()
+import { useChatStore } from '../stores'
+import { storeToRefs } from 'pinia'
+import { isDirectChat } from '../utils/types'
 
 const router = useRouter()
 
+const { currentChat } = storeToRefs(useChatStore())
+
 const { timeAgoLabel: lastSeenLabel } = useTimeAgo(
-  () => props.currentChat?.companionLastSeen,
+  () => (isDirectChat(currentChat.value) ? currentChat.value?.lastSeen : ''),
   'en',
   (timeAgo: string) => 'Last seen ' + timeAgo,
 )
 
 const isTyping = computed((): boolean => {
-  return !!props.currentChat?.isTyping
+  return isDirectChat(currentChat.value) ? currentChat.value.isTyping : false
 })
 
 const isOnline = computed((): boolean => {
-  return !!props.currentChat?.isOnline
+  return isDirectChat(currentChat.value) ? currentChat.value.isOnline : false
 })
 
 const openChats = () => {

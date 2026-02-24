@@ -1,19 +1,17 @@
 import { debounce } from '@/app/utils/debounce'
-import {
-  isLoadingMessage,
-  MessageStatus,
-  type LoadingMessage,
-  type Message,
-} from '../utils/types'
-import { sendReadMessagesIds, socket } from '../services'
-import { toValue, type MaybeRefOrGetter, type Ref } from 'vue'
+import { isLoadingMessage, MessageStatus, type Chat, type Message } from '../utils/types'
+import { sendReadMessagesIds } from '../services'
+import { toRef, toValue, type MaybeRefOrGetter, type Ref } from 'vue'
 import { useAuthStore } from '@/auth/stores'
 
 export default function useMessageReader(
   chatId: MaybeRefOrGetter<string>,
-  messages: Ref<(Message | LoadingMessage)[]>,
+  messageArray: MaybeRefOrGetter<Message[] | undefined>,
+  currentChat: Ref<Chat | undefined>,
 ) {
   const authStore = useAuthStore()
+
+  const messages = toRef(messageArray)
 
   /** Temporarily stores IDs of other users' messages that have just been read by the current user.
    * The IDs are stored here until they are sent to the server to mark those messages as read. */
@@ -22,7 +20,7 @@ export default function useMessageReader(
   /** Changes statuses of messages with provided IDs to Seen on the client side. */
   const markAsRead = (idsOfMessages: string[]) => {
     const ids = new Set(idsOfMessages)
-    if (!ids.size) return
+    if (!ids.size || !messages.value) return
 
     for (const message of messages.value) {
       if (!isLoadingMessage(message) && ids.delete(message.messageId)) {
@@ -32,15 +30,19 @@ export default function useMessageReader(
     }
   }
 
+  const changeUnreadCount = (change: number) => {
+    if (currentChat.value) {
+      currentChat.value.unreadCount += change
+    }
+  }
+
   const debouncedRead = debounce(() => {
     markAsRead(newlyReadMessagesIds)
     sendReadMessagesIds(toValue(chatId), newlyReadMessagesIds)
+    changeUnreadCount(-newlyReadMessagesIds.length)
+
     newlyReadMessagesIds = []
   }, 500)
-
-  socket.on('newlyReadMessages', (ids: string[]) => {
-    markAsRead(ids)
-  })
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
@@ -66,6 +68,8 @@ export default function useMessageReader(
 
   /** Makes unread messages of other users be watched for read event. */
   const observeUnreadMessages = () => {
+    if (!messages.value) return
+
     messages.value.forEach((message) => {
       if (
         message.status !== MessageStatus.Unseen ||
@@ -78,5 +82,5 @@ export default function useMessageReader(
     })
   }
 
-  return { observeUnreadMessages, observeMessage }
+  return { observeUnreadMessages, observeMessage, markAsRead }
 }

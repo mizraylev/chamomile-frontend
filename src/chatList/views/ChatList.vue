@@ -4,18 +4,19 @@
       <ChatSearch />
     </div>
 
-    <div class="chatList">
+    <TransitionGroup name="list" tag="div" class="chatList">
       <ChatCard
-        v-for="chat in chats"
+        v-for="chat in chatList"
         :key="chat.id"
         :id="chat.id"
-        :title="chat.companionNickname"
-        :time="chat.lastMessageTimestamp"
-        :message="chat.lastMessageContent"
-        :isOnline="chat.isOnline"
-        :isTyping="chat.isTyping"
+        :title="chat.name"
+        :time="chat.lastMessage.timestamp"
+        :message="chat.lastMessage.content"
+        :isOnline="isDirectChatListItem(chat) ? chat.isOnline : false"
+        :isTyping="isDirectChatListItem(chat) ? chat.isTyping : false"
+        :unreadCount="isDirectChatListItem(chat) ? chat.unreadCount : 0"
       />
-    </div>
+    </TransitionGroup>
   </div>
 </template>
 
@@ -23,15 +24,12 @@
 import ChatCard from '../components/ChatCard.vue'
 import ChatSearch from '../components/ChatSearch.vue'
 
-import { type PropType } from 'vue'
-import { type Chat } from '../utils/types'
+import { isDirectChatListItem } from '../utils/types'
+import { useChatStore } from '@/chat/stores'
+import { storeToRefs } from 'pinia'
 
-defineProps({
-  chats: {
-    type: Object as PropType<Chat[]>,
-    required: true,
-  },
-})
+const chatStore = useChatStore()
+const { chatList } = storeToRefs(chatStore)
 </script>
 
 <style scoped>
@@ -42,5 +40,18 @@ defineProps({
 
 .search {
   padding: var(--spacing-l);
+}
+
+.list-move {
+  transition: transform 0.5s ease;
+}
+
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.list-leave-active {
+  position: absolute;
 }
 </style>

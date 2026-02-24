@@ -1,5 +1,5 @@
 <template>
-  <RouterLink :to="chatRoute">
+  <RouterLink :to="chatRoute" class="link">
     <div class="chatCard">
       <div class="avatarWrapper">
         <img v-if="avatarSrc" :src="avatarSrc" alt="Avatar" class="avatar" />
@@ -96,6 +96,10 @@ const avatarInitials = computed((): string => {
 </script>
 
 <style scoped lang="scss">
+.link {
+  display: block;
+}
+
 .chatCard {
   padding: var(--spacing-l);
   display: grid;

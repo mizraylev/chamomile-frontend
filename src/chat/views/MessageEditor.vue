@@ -38,16 +38,15 @@ import { sendMessage, sendTypingStatus } from '../services'
 import { debounce } from '@/app/utils/debounce'
 import { MessageStatus, type LoadingMessage } from '../utils/types'
 import { useAuthStore } from '@/auth/stores'
-
-const props = defineProps<{
-  chatId: string
-}>()
+import { useChatStore } from '../stores'
+import { storeToRefs } from 'pinia'
 
 const emit = defineEmits<{
   addMessage: [message: LoadingMessage]
 }>()
 
 const authStore = useAuthStore()
+const { currentChatId } = storeToRefs(useChatStore())
 
 const counter = ref(0)
 const message = ref('')
@@ -55,7 +54,7 @@ const isTyping = ref(false)
 
 const setTyping = (value: boolean) => {
   isTyping.value = value
-  sendTypingStatus(value, props.chatId)
+  sendTypingStatus(value, currentChatId.value)
 }
 
 const debouncedFinishTyping = debounce(() => setTyping(false), 1500)
@@ -82,7 +81,7 @@ const send = () => {
       status: MessageStatus.Loading,
     })
 
-    sendMessage(readyMessage, messageKey, props.chatId)
+    sendMessage(readyMessage, messageKey, currentChatId.value)
 
     counter.value++
     message.value = ''

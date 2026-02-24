@@ -7,10 +7,10 @@
       <SidePanel />
     </div>
     <div class="chats">
-      <ChatList :chats="chats" />
+      <ChatList />
     </div>
     <div class="chat">
-      <RouterView :chats="chats" />
+      <RouterView />
     </div>
   </div>
 </template>
@@ -19,51 +19,17 @@
 import ChatList from '@/chatList/views/ChatList.vue'
 import SidePanel from '@/sidePanel/views/SidePanel.vue'
 
-import { getChats } from '@/chatList/services'
-import { ref, type PropType } from 'vue'
-import { type Chat } from '@/chatList/utils/types'
-import { connectSocket, socket } from '@/chat/services'
+import { connectSocket } from '@/chat/services'
 import { useRoute } from 'vue-router'
 import { ChatRouteName } from '@/chat/router'
-import type { GetTypingStatus, GetUserPresenceStatus } from '@/chat/utils/types'
+import { useChatStore } from '@/chat/stores'
 
-const props = defineProps({
-  chatList: {
-    type: Object as PropType<Chat[]>,
-    required: true,
-    default: [] as Chat[],
-  },
-})
+connectSocket()
 
 const route = useRoute()
 
-const chats = ref<Chat[]>(props.chatList)
-
-defineOptions({
-  async beforeRouteEnter(to, from, next) {
-    const chatList = await getChats()
-    to.meta.chatList = chatList
-    connectSocket()
-    next()
-  },
-})
-
-socket.on('typing', (typing: GetTypingStatus) => {
-  const chat = chats.value.find((chat) => chat.id === typing.chatId)
-  if (!chat) return
-
-  chat.isTyping = typing.isTyping
-})
-
-socket.on('user:presence_changed', (presence: GetUserPresenceStatus) => {
-  const chat = chats.value.find((chat) => chat.id === presence.chatId)
-  if (!chat) return
-
-  chat.isOnline = presence.isOnline
-  if (presence.lastSeen) {
-    chat.companionLastSeen = presence.lastSeen
-  }
-})
+const { loadChats } = useChatStore()
+loadChats()
 </script>
 
 <style scoped lang="scss">
